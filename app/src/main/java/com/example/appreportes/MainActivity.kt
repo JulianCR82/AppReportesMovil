@@ -56,6 +56,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.databinding.DataBindingUtil
+import com.example.appreportes.databinding.ActivityMainBinding
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -69,21 +71,20 @@ class MainActivity : ComponentActivity() {
     //variable para manejar las preferencias del usuario
     private lateinit var preferencesManager: DataStore
 
+    private lateinit var binding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        inicializarPreferencias() //gestor de preferencias
-        configurarUI() //interfaz grafica con compose
-    }
+        //Inicializa Data Binding
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        binding.lifecycleOwner = this
 
-    private fun inicializarPreferencias() {
-        // Inicializamos el DataStore pasándole el contexto de la actividad
+        // Inicializa las preferencias ANTES de usar Compose
         preferencesManager = DataStore(this)
-    }
 
-    // Configura y muestra la interfaz de usuario usando Jetpack Compose
-    private fun configurarUI() {
-        setContent {
+        //Carga la UI Compose dentro del ComposeView del XML
+        binding.composeView.setContent {
             MaterialTheme {
                 MainScreen(
                     userPrefs = preferencesManager,
@@ -91,7 +92,9 @@ class MainActivity : ComponentActivity() {
                 )
             }
         }
+
     }
+
     // Navega a la actividad que muestra la lista de reportes
     private fun navegarAListaReportes() {
         val intent = Intent(this, ListaReportesActivity::class.java)
